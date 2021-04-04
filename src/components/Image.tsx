@@ -44,6 +44,23 @@ type ImageProps = Pick<
     dimensions?: [number, number];
     layout?: 'fill' | LayoutValue;
     sizes?: Sizes; // could be a string too, this one is just a way to make it easier
+    borderRadius?:
+      | 'base'
+      | (string & {})
+      | '-moz-initial'
+      | 'inherit'
+      | 'initial'
+      | 'revert'
+      | 'unset'
+      | 'none'
+      | 'sm'
+      | 'md'
+      | 'lg'
+      | 'xl'
+      | '2xl'
+      | '3xl'
+      | 'full'
+      | undefined;
   };
 
 /**
@@ -63,6 +80,7 @@ const ImageWithChakra = chakra(
     sizes,
     src,
     unoptimized,
+    borderRadius,
     ...nextjsInternals
   }: ImageProps): ReactElement => {
     /**
