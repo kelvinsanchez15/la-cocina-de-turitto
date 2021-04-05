@@ -100,6 +100,7 @@ export default function Home({ products }: Props) {
                 key={product.id}
                 borderRadius="3xl"
                 backgroundColor="whiteAlpha.900"
+                boxShadow="md"
               >
                 <Image
                   borderRadius="3xl"
