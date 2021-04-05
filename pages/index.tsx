@@ -85,7 +85,6 @@ export default function Home({ products }: Props) {
       );
   }, [filteredCart]);
 
-  console.log(text);
   return (
     <>
       <Head>
