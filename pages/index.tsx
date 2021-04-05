@@ -16,8 +16,12 @@ import { Product } from '../src/types';
 import api from '../src/utils/api';
 import parseCurrency from '../src/utils/parseCurrency';
 
+interface ProductWithCount extends Product {
+  quantity: number;
+}
+
 interface Props {
-  products: Product[];
+  products: ProductWithCount[];
 }
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -32,24 +36,56 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 export default function Home({ products }: Props) {
-  const [cart, setCart] = React.useState<Product[]>([]);
-  const text = React.useMemo(
-    () =>
-      cart
-        .reduce(
-          (message, product) =>
-            message.concat(
-              `* ${product.title} - ${parseCurrency(product.price)}\n`
-            ),
-          ``
-        )
-        .concat(
-          `\nTotal: ${parseCurrency(
-            cart.reduce((total, product) => total + product.price, 0)
-          )}`
-        ),
-    [cart]
+  const initialState = products.map((product) => {
+    return { ...product, quantity: 0 };
+  });
+  const [cart, setCart] = React.useState<ProductWithCount[]>(initialState);
+
+  const handleIncreaseProductQuantity = (id: string) => {
+    let updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+    );
+    setCart(updatedCart);
+  };
+
+  const handleDecreaseProductQuantity = (id: string) => {
+    let updatedCart = cart.map((item) => {
+      if (item.id === id) {
+        if (item.quantity == 0) return item;
+        return { ...item, quantity: item.quantity - 1 };
+      }
+      return item;
+    });
+    setCart(updatedCart);
+  };
+
+  const filteredCart = React.useMemo(
+    () => cart.filter((product) => product.quantity > 0),
+    cart
   );
+
+  const text = React.useMemo(() => {
+    return filteredCart
+      .reduce(
+        (message, product) =>
+          message.concat(
+            `* (${product.quantity}) ${product.title} - ${parseCurrency(
+              product.price
+            )}\n`
+          ),
+        ``
+      )
+      .concat(
+        `\nTotal: ${parseCurrency(
+          filteredCart.reduce(
+            (total, product) => total + product.price * product.quantity,
+            0
+          )
+        )}`
+      );
+  }, [filteredCart]);
+
+  console.log(text);
   return (
     <>
       <Head>
@@ -60,7 +96,7 @@ export default function Home({ products }: Props) {
       <main>
         <Grid templateColumns="repeat(auto-fill, minmax(240px, 1fr))" gap={6}>
           {Boolean(products.length) &&
-            products.map((product) => (
+            cart.map((product) => (
               <Stack
                 key={product.id}
                 spacing={3}
@@ -89,7 +125,15 @@ export default function Home({ products }: Props) {
                     <Button
                       colorScheme="red"
                       borderRadius="full"
-                      onClick={() => setCart((cart) => cart.concat(product))}
+                      onClick={() => handleDecreaseProductQuantity(product.id)}
+                    >
+                      -
+                    </Button>
+                    <Text>{product.quantity}</Text>
+                    <Button
+                      colorScheme="red"
+                      borderRadius="full"
+                      onClick={() => handleIncreaseProductQuantity(product.id)}
                     >
                       +
                     </Button>
@@ -99,7 +143,7 @@ export default function Home({ products }: Props) {
             ))}
         </Grid>
 
-        {Boolean(cart.length) && (
+        {Boolean(filteredCart.length) && (
           <Flex
             alignItems="center"
             bottom={4}
@@ -115,7 +159,7 @@ export default function Home({ products }: Props) {
               )}`}
               width="fit-content"
             >
-              Completar pedido ({cart.length} productos)
+              Completar pedido ({filteredCart.length} productos)
             </Button>
           </Flex>
         )}
