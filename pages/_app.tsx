@@ -18,7 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Image
             src="https://user-images.githubusercontent.com/4708484/113499181-eb3b0c00-94e1-11eb-9427-ce8a202440b5.png"
             alt="Logo"
-            borderRadius={9999}
+            borderRadius="full"
             dimensions={[128, 128]}
           />
 
