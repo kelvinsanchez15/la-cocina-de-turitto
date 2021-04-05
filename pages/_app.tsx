@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Container maxW="container.lg" padding={4}>
         <VStack>
           <Image
-            src="https://user-images.githubusercontent.com/4708484/113499181-eb3b0c00-94e1-11eb-9427-ce8a202440b5.png"
+            src="/logo.png"
             alt="Logo"
             borderRadius="full"
             dimensions={[128, 128]}
