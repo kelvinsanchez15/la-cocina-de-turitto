@@ -12,11 +12,13 @@ import {
   TabPanels,
   TabPanel,
   Avatar,
+  Box,
 } from '@chakra-ui/react';
 import { ProductWithCount } from '../src/types';
 import api from '../src/utils/api';
 import parseCurrency from '../src/utils/parseCurrency';
 import ProductCard from '../src/components/ProductCard';
+import { Image } from '../src/components/Image';
 
 interface Props {
   products: ProductWithCount[];
@@ -103,12 +105,16 @@ export default function Home({ products }: Props) {
             {Boolean(uniqueProductByCategory.length) &&
               uniqueProductByCategory.map((uniqueProduct) => (
                 <Tab key={uniqueProduct?.category}>
-                  <Avatar
-                    size="sm"
-                    name="Dan Abrahmov"
-                    src={uniqueProduct?.image}
-                    mr={4}
-                  />
+                  <Box as="span" width={8} height={8} mr={4}>
+                    <Image
+                      src={uniqueProduct?.image || ''}
+                      alt="Logo"
+                      borderRadius="full"
+                      dimensions={[100, 100]}
+                      objectFit="cover"
+                      priority
+                    />
+                  </Box>
                   {uniqueProduct?.category}
                 </Tab>
               ))}
