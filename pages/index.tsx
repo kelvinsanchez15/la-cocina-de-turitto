@@ -6,19 +6,17 @@ import {
   Flex,
   Grid,
   Link,
-  Stack,
-  Text,
-  Heading,
-  Box,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  Avatar,
 } from '@chakra-ui/react';
-import { Image } from '../src/components/Image';
-import { Product } from '../src/types';
+import { ProductWithCount } from '../src/types';
 import api from '../src/utils/api';
 import parseCurrency from '../src/utils/parseCurrency';
-
-interface ProductWithCount extends Product {
-  quantity: number;
-}
+import ProductCard from '../src/components/ProductCard';
 
 interface Props {
   products: ProductWithCount[];
@@ -40,6 +38,12 @@ export default function Home({ products }: Props) {
     return { ...product, quantity: 0 };
   });
   const [cart, setCart] = React.useState<ProductWithCount[]>(initialState);
+
+  const uniqueProductByCategory = Array.from(
+    new Set(products.map((a) => a.category))
+  ).map((category) => {
+    return products.find((a) => a.category === category);
+  });
 
   const handleIncreaseProductQuantity = (id: string) => {
     let updatedCart = cart.map((item) =>
@@ -93,73 +97,70 @@ export default function Home({ products }: Props) {
       </Head>
 
       <main>
-        <Grid templateColumns="repeat(auto-fill, minmax(240px, 1fr))" gap={6}>
-          {Boolean(products.length) &&
-            cart.map((product) => (
-              <Stack
-                key={product.id}
-                borderRadius="3xl"
-                backgroundColor="whiteAlpha.900"
-                boxShadow="md"
+        <Tabs isFitted variant="solid-rounded" colorScheme="red">
+          <TabList mb="1em" px={4} py={2} overflowX="auto">
+            <Tab>Todo</Tab>
+            {Boolean(uniqueProductByCategory.length) &&
+              uniqueProductByCategory.map((uniqueProduct) => (
+                <Tab key={uniqueProduct?.category}>
+                  <Avatar
+                    size="sm"
+                    name="Dan Abrahmov"
+                    src={uniqueProduct?.image}
+                    mr={4}
+                  />
+                  {uniqueProduct?.category}
+                </Tab>
+              ))}
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <Grid
+                templateColumns="repeat(auto-fill, minmax(240px, 1fr))"
+                gap={6}
               >
-                <Image
-                  borderRadius="3xl"
-                  src={product.image}
-                  alt={product.title}
-                  dimensions={[400, 300]}
-                  objectFit="cover"
-                />
-
-                <Stack padding={5}>
-                  <Box minH={100}>
-                    <Heading size="lg">{product.title}</Heading>
-                    <Text color="GrayText">{product.description}</Text>
-                  </Box>
-                  <Box display="flex" justifyContent="space-between">
-                    <Text fontSize="md" fontWeight="bold">
-                      Precio
-                    </Text>
-                    <Text fontSize="md" fontWeight="bold">
-                      Cantidad
-                    </Text>
-                  </Box>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
+                {Boolean(products.length) &&
+                  cart.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      handleIncreaseProductQuantity={
+                        handleIncreaseProductQuantity
+                      }
+                      handleDecreaseProductQuantity={
+                        handleDecreaseProductQuantity
+                      }
+                    />
+                  ))}
+              </Grid>
+            </TabPanel>
+            {Boolean(products.length) &&
+              uniqueProductByCategory.map((uniqueProduct) => (
+                <TabPanel key={uniqueProduct?.category}>
+                  <Grid
+                    templateColumns="repeat(auto-fill, minmax(240px, 1fr))"
+                    gap={6}
                   >
-                    <Heading size="lg" as="span" flexBasis={1}>
-                      {parseCurrency(product.price)}
-                    </Heading>
-
-                    <Box display="flex" alignItems="center">
-                      <Button
-                        colorScheme="blackAlpha"
-                        borderRadius="full"
-                        onClick={() =>
-                          handleDecreaseProductQuantity(product.id)
-                        }
-                      >
-                        -
-                      </Button>
-                      <Text fontWeight="bold" paddingX={3}>
-                        {product.quantity}
-                      </Text>
-                      <Button
-                        colorScheme="red"
-                        borderRadius="full"
-                        onClick={() =>
-                          handleIncreaseProductQuantity(product.id)
-                        }
-                      >
-                        +
-                      </Button>
-                    </Box>
-                  </Box>
-                </Stack>
-              </Stack>
-            ))}
-        </Grid>
+                    {cart.map(
+                      (product) =>
+                        product.category === uniqueProduct?.category && (
+                          <ProductCard
+                            key={product.id}
+                            product={product}
+                            handleIncreaseProductQuantity={
+                              handleIncreaseProductQuantity
+                            }
+                            handleDecreaseProductQuantity={
+                              handleDecreaseProductQuantity
+                            }
+                          />
+                        )
+                    )}
+                  </Grid>
+                </TabPanel>
+              ))}
+          </TabPanels>
+        </Tabs>
 
         {Boolean(filteredCart.length) && (
           <Flex
