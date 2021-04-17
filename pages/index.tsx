@@ -99,12 +99,20 @@ export default function Home({ products }: Props) {
       </Head>
 
       <main>
-        <Tabs isFitted variant="solid-rounded" colorScheme="red">
+        <Tabs variant="solid-rounded" colorScheme="red" isFitted>
           <TabList mb="1em" px={4} py={2} overflowX="auto">
-            <Tab>Todo</Tab>
+            <Tab bg="white" boxShadow="md">
+              Todo
+            </Tab>
+
             {Boolean(uniqueProductByCategory.length) &&
               uniqueProductByCategory.map((uniqueProduct) => (
-                <Tab key={uniqueProduct?.category}>
+                <Tab
+                  key={uniqueProduct?.category}
+                  ml={5}
+                  bg="white"
+                  boxShadow="md"
+                >
                   <Box as="span" width={8} height={8} mr={4}>
                     <Image
                       src={uniqueProduct?.image || ''}
