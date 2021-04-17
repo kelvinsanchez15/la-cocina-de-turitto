@@ -6,3 +6,7 @@ export interface Product {
   image: string;
   price: number;
 }
+
+export interface ProductWithCount extends Product {
+  quantity: number;
+}
